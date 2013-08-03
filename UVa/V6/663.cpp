@@ -1,80 +1,120 @@
-#include<cstdio>
-#include<queue>
-#include<algorithm>
+#include <iostream>
+#include <cstdio>
+#include <algorithm>
+#include <set>
+#include <cstring>
+#include <cstdlib>
+#include <cctype>
+#include <map>
+#include <string>
+#include <sstream>
+#include <vector>
+#include <queue>
+#include <stack>
+#include <cmath>
+#include <numeric>
+
+#define repn( i , a , b ) for( int i = ( int ) a ; i < ( int ) b ; i ++ )
+#define rep( i , n ) repn( i , 0 , n ) 
+#define all( x )  x.begin() , x.end()
+#define rall( x ) x.rbegin() , x.rend()
+#define mp make_pair
+#define fst first
+#define snd second
 using namespace std;
 
-bool present[30][30];
-int indeg[30];
-int X1[30];
-int X2[30];
-int Y1[30];
-int Y2[30];
-int XP[30];
-int YP[30];
+typedef long long int64;
+typedef long double ldouble;
+typedef pair< int , int > pii;
 
-pair< int , int > res[30];
+const int MAXN = 100;
 
-inline bool inside( int i , int  j ){
-  return XP[i]>X1[j] && XP[i]<X2[j] && YP[i]>Y1[j] && YP[i]<Y2[j];
+int X1[MAXN];
+int X2[MAXN];
+int Y1[MAXN];
+int Y2[MAXN];
+int N;
+int G[MAXN][MAXN];
+bool vis[MAXN];
+int A[MAXN];
+
+bool inside( int &x , int &y , int idx ){
+	return  X1[idx] <= x && x <= X2[idx] &&
+			Y1[idx] <= y && y <= Y2[idx];
+}
+
+bool alternating_path( int u ){
+	if ( vis[u] ) return false;
+	vis[u] = true;
+	int v;	
+	for ( int v = 0; v < N; ++v ){
+		if ( G[u][v] == 1 ){
+			if ( A[v] == -1 ){
+				A[v] = u;
+				return true;
+			}
+			else {
+				if ( alternating_path( A[v] ) ){
+					A[v] = u;
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+
+bool has_matching(){
+	bool ok = true;
+	fill( A , A + N , -1 );
+	for ( int i=0; i < N && ok; ++i ){
+		fill( vis , vis + N , false );
+		ok = alternating_path( i );	
+	}
+	return ok;
 }
 
 int main(){
-  int n;
-  int m;
-  int u;
-  int cases = 0;
-  while ( scanf("%d",&n) && n ){
-	 cases++;
-	 for ( int i=0; i < n ; ++i ){
-		indeg[i] = 0;
-		for ( int j=0; j < n; ++j )
-		  present[i][j] = false;
-	 }
-	 for ( int i=0; i < n; ++i ){
-		scanf("%d %d %d %d",X1+i,X2+i,Y1+i,Y2+i);
-	 }
-	 bool ok = true;
-	 bool found;
-	 for ( int i=0; i < n; ++i ){
-		scanf("%d %d",XP+i,YP+i);
-		found = false;
-		for ( int j=0; j < n; ++j ){
-		  if ( inside( i , j ) ){ indeg[j]++; present[j][i] = true; found = true; }
+	int x,y;
+	int runs = 0;
+
+	while ( scanf("%d",&N) && N ){
+		runs++;
+		for ( int i=0; i < N; ++ i ){	
+			scanf("%d %d %d %d",X1+i,X2+i,Y1+i,Y2+i);
+			for ( int j=0; j < N; ++j ) G[i][j] = 0;
 		}
-		ok &= found;
-	 }
-	 printf("Heap %d\n",cases);
-	 
-	 
-		m = 0;
-		queue<int> q;
-		for ( int i=0; i < n; ++i ) if ( indeg[i] == 1 ) q.push(i);
-		while ( !q.empty() ){
-		  u = q.front();  q.pop();
-		  for ( int j=0; j < n; ++j ){
-			 if ( present[u][j] ){
-				res[m++] = make_pair( u , j );
-				for ( int i=0; i < n; ++i ){
-				  if ( i != u && present[i][j] ){
-					 present[i][j] = false; indeg[i]--;
-					 if ( indeg[i] == 1 ) q.push(i);
-				  }
-				}
-				break;
-			 }
-		  }
+	
+		for ( int i=0; i < N; ++i ){
+			scanf("%d %d",&x,&y);
+			for ( int j=0; j < N; ++j )
+				if ( inside( x , y , j ) ) 
+					G[i][j] = 1;
 		}
-		if ( m == 0 ) puts("none");
+		
+		printf("Heap %d\n",runs);
+
+		if (!has_matching()) puts("none");
 		else {
-		  sort( res , res + n );
-		  for ( int i=0; i < m; ++i ){
-			 if ( i > 0 ) putchar(' ');
-			 printf("(%c,%d)",(char)(res[i].first+'A'),res[i].second+1);
-		  }
-		  putchar('\n');
+			int res[MAXN];
+			int cnt = 0; 
+			for ( int i=0; i<N; ++i ) res[i] = A[i];
+
+			for ( int i=0; i < N; ++i ){
+				G[ res[i] ][ i ] = 0;
+				if (!has_matching()){
+					if ( cnt ) putchar(' ');
+					printf("(%c,%d)",(char)(i+'A'),res[i]+1);
+					cnt++;
+				}
+				G[ res[i] ][ i ] = 1;
+			}
+			if ( !cnt ) puts("none");
+			else puts("");
 		}
-	 
-	 puts("");
-  }
-  return 0;
+		puts("");
+	}
+
+	return 0;
 }
+
