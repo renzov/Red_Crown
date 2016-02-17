@@ -1,4 +1,3 @@
-/* INPUT SPEC. in Judge IS WRONG !!!!!!!!! SEE HOW TO PROCESS */
 #include <iostream>
 #include <cstdio>
 #include <algorithm>
@@ -89,6 +88,9 @@ void find_and_update( int a, int c ){
 		else 
 			r = m;
 	}
+	if ( !Free[l+1] ){
+		while (2);
+	}
 	/* 0 <= l < size , since c > 0 */ 
 	/* blocks m+1 ... size have the desired ints */
 	if ( (sumFree[size] - sumFree[l]) == c ){ /* collapse all blocks */
@@ -122,6 +124,16 @@ void process( int a, int b, int c ){
 	}
 }
 
+void print_blocks(){
+	for ( int i=1; i <= size; ++i ){
+		if ( Free[i] ) 
+			printf("{%d, %d} ", L[i], R[i]);
+		else 
+			printf("[%d, %d] ", L[i], R[i]);
+	}
+	puts("");
+}
+
 int main(){
 	int runs;
 	scanf("%d", &runs);
@@ -130,14 +142,22 @@ int main(){
 		init();
 		for  ( int i=0; i < N; ++i ){
 			scanf("%d %d %d", &I[i].second.first, &I[i].first, &I[i].second.second);
+			assert( I[i].second.second <= (I[i].first - I[i].second.first + 1)  );
+			assert( I[i].first  >=  I[i].second.first  );
+			assert( I[i].first <= 50000 );
+			assert( I[i].second.first >= 0 );
 		}
+		
+
 		sort( I , I + N );
 		for ( int i=0; i < N; ++i ){
 			update( I[i].first );
+		//print_blocks();
 			process( I[i].second.first , I[i].first, I[i].second.second );
+		//print_blocks();
+		//puts("");
 		}
-		printf("%d\n", sumUsed[size]);
-		if (runs) puts("");
+		printf("%d\n", sumUsed[size]);	
 	}
 	return 0;
 }
