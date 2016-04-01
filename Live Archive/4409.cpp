@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <set>
 #include <climits>
+#include <cassert>
 using namespace std;
 
 typedef long long int64;
@@ -147,6 +148,7 @@ int main(){
 	while ( runs-- ){
 		cases++;
 		scanf("%d %d", &N, &M);
+		assert( N > 0 && N < MAXN );
 		E = 0;		
 		for ( int i=0; i < N; ++i ){ head[i] = -1, L[i] = D[i] = 0; S[i].clear(); }
 		L[N] = D[N] = 0;
@@ -161,3 +163,4 @@ int main(){
 	}
 	return 0;
 }
+
