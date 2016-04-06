@@ -1,5 +1,4 @@
 #include<cstdio>
-#include<cassert>
 #include<algorithm>
 
 using namespace std;
@@ -9,7 +8,7 @@ typedef long double ldouble;
 typedef pair< int , int > pii;
 
 const int MAXN = 100005;
-const int MAXV = 21 * MAXN;
+const int MAXV = 40 * MAXN;
 
 int A[MAXN];
 int B[MAXN];
@@ -25,7 +24,7 @@ struct Query {
 	Query (){}
 };
 
-Query q[ 35001 ];
+Query q[ 100005 ];
 
 bool cmp( const int &i , const int &j ){
 	return A[i] < A[j];
@@ -84,16 +83,16 @@ int main(){
 	int l,r,k;
 	char s[10];
 	int cases = 0;
-	int sum1, sum2, sum3 = 0;
+	long long sum1, sum2, sum3 = 0;
 
 	while ( scanf("%d", &M) != EOF ){
 		cases++;
 		Q = N = 0;
 		for ( int i=0; i < M; ++i ){
-			scanf("%s", s);
+			scanf(" %s", s);
 			if ( s[0] == 'I' ){
-				scanf("%d", A + i );
-				ord[i] = i;
+				scanf("%d", A + N );
+				ord[N] = N;
 				N++;
 			}
 			else if ( s[6] == '1' ){ //Query 1
@@ -123,17 +122,19 @@ int main(){
 		for ( int i=0; i < Q; ++i ){
 			Query &p = q[i];
 			switch (p.type){
-				case '1' : 	res = query( root[ p.y ] , root[ (p.x)? (p.x-1):0 ] , 0 , N-1 , p.z ); 
+				case '1' : 	res = query( root[ p.y ] , p.x? root[p.x-1]:0 , 0 , N-1 , p.z );
+							sum1 += B[res];
 							break;
 				case '2' : 	pos = lower_bound( B , B + N , p.x ) - B;
-						   	res = query2( root[ p.y - 1 ] , 0 , N - 1 , 0 , pos  ); 
+							res = query2( root[ p.y - 1 ] , 0 , N - 1 , 0 , pos  );
+							sum2 += res;
 						   	break;
 				case '3' : 	res = query( root[ p.y - 1 ] , 0 , 0 , N - 1 , p.x ); 
-						   	break;
+							sum3 += B[res];
+							break;
 			}
 		}
-
+		printf("Case %d:\n%lld\n%lld\n%lld\n", cases, sum1, sum2, sum3);
 	}
 	return 0;
 }
-
