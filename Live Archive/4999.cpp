@@ -6,13 +6,10 @@
 #include <cstdlib>
 #include <cctype>
 #include <map>
-#include <string>
-#include <sstream>
 #include <vector>
-#include <queue>
-#include <stack>
 #include <cmath>
-#include <numeric>
+#include <unordered_map>
+
 
 #define repn( i , a , b ) for( int i = ( int ) a ; i < ( int ) b ; i ++ )
 #define rep( i , n ) repn( i , 0 , n ) 
@@ -30,10 +27,11 @@ typedef pair< int , int > pii;
 const int INF = 10000000; 
 const int SHIFT = 3;
 const int ELEM = ( 1 << SHIFT ) - 1;
-const int MASKBITS = ( 1 << (SHIFT*8) )  - 1; 
+const int MASKBITS = ( 1 << (SHIFT*8) ) - 1; 
 int cost[10][10];
 char board[10][10];
-map<int,int> dp[10][10];
+char sol[10][10];
+unordered_map<int,int> dp[10][10];
 
 int solve( int x, int y, int mask ){
 	if ( x == 8 ){	//We have processed all rows
@@ -66,13 +64,13 @@ int solve( int x, int y, int mask ){
 	int nextMask;
 	if ( above == 0 && left == 0 ){
 		nextMask = ( (mask << SHIFT) | (largest+1) ) & MASKBITS;
-		res = min( res , solve(x, y+1, nextMask) + cost[x][y] );
+		res = min(res, solve(x, y+1, nextMask) + cost[x][y]);
 	}
 	else if ( (above==0) ^ (left==0) ){
 		nextMask = ( (mask<<SHIFT) | (max(left, above)) ) & MASKBITS;
-		res = min( res, solve(x, y+1, nextMask) + cost[x][y] + 1 );
+		res = min(res, solve(x, y+1, nextMask) + cost[x][y] + 1);
 	}
-	else {
+	else if ( above != left ){ //There is always an acyclic optimal soltion
 		int a = min(left, above);
 		int b = max(left, above);
 		int c;
@@ -84,7 +82,7 @@ int solve( int x, int y, int mask ){
 			nextMask = ( (nextMask<<SHIFT) | (c) ) & MASKBITS;
 		}
 		nextMask = ( (nextMask<<SHIFT) | (a) ) & MASKBITS;
-		res = min( res, solve(x, y+1, nextMask) + cost[x][y] + 2 );
+		res = min(res, solve(x, y+1, nextMask) + cost[x][y] + 2);
 	}
 	bool canCut = true;
 	if ( comp[0] > 0 ){
@@ -95,10 +93,10 @@ int solve( int x, int y, int mask ){
 				break;
 			}
 		}
-		if ( canCut ){
-			nextMask = (mask<<SHIFT) & MASKBITS;
-			res = min( res, solve(x, y+1, nextMask) );
-		}
+	}
+	if ( canCut ){
+		nextMask = (mask<<SHIFT) & MASKBITS;
+		res = min(res, solve(x, y+1, nextMask));
 	}
 	dp[x][y][mask] = res;
 	return res;
