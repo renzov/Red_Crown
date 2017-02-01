@@ -1,0 +1,17 @@
+Nivel 1
+
+UVa 882 - The Mailbox Manufacturers Problem
+SPOJ INTERVAL - Intervals
+LA 4977 - Enter The Dragon
+LA 4367 - Think I'll Buy Me a Football Team
+SPOJ ESJAIL - Escape from Jail
+LA 4704 - Stringer
+
+Nivel 2
+
+UVa 10202 - Pairsumonious Numbers
+SPOJ INTERVAL - Intervals
+LA 4977 - Enter The Dragon
+LA 3132 - Minimax Triangulation
+LA 4291 - Sculpture
+LA 4390 - Counting heaps

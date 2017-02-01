@@ -1,0 +1,20 @@
+Nivel 1
+
+CF Gym 589 2015-2016 NEERC, Southern Subregional - Gourmet and Banquet
+Codechef INSQ15_D - Sesquipedalophobia
+Timus - 1122. Game
+Codechef INSQ15_B - Lanku and mysterious country
+CF Gym KTU Programming Camp (Day 3) - Many recursions
+CF Gym KTU Programming Camp (Day 3) - Broken robot
+Timus - 1671. Anansi's Cobweb
+
+Nivel 2
+
+SPOJ ANGELS - Angels and Devils
+CF Round 213 D1 - B. Free Market
+CF Round 254 D1 - C. DZY Loves Colors
+CF Gym 589 2015-2016 NEERC, Southern Subregional - Gourmet and Banquet
+Codechef INSQ15_C - Nice subsets
+Codechef DCGAME - Devu and Churu
+LA 4811 - Growing Strings
+URI 1854 - Inverno em Winterfell
