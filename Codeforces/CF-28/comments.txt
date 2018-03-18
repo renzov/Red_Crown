@@ -1,0 +1,28 @@
+- Too much time to implement A (silly mistake about array size)
+- C seems easy, need to understand probability better (always a weak point).
+- At some time in the contest, became hopeless (never give up!!!!).
+
+Upsolving
+=========
+
+- D: Great problem. First hint is to think about a solution of the problem.
+     Since given any truck the sum of C_i of the trucks behind (resp. front) 
+	 must be L_i (resp. R_i), this means that the elements in a solution
+	 must have equal L_i + C_i + R_i 
+
+	 From this we do a dp. Let b[ i ][ r ] be an optimal solution from 
+	 trucks 1 ... i that need r in front. 
+	 The optimal solution is b[ N ][ 0 ]. We can drop the 
+	 first parameter of the dp, and note the if there is 
+	 a truck j that needs C_i + R_i in front, then
+
+	 	R_j = R_i + C_i and L_j + C_j + R_j = L_i + C_i + R_i
+
+	therefore, L_i = L_j + C_j. So we can append i without worrying 
+	to guarantee the behind constraint. Finally, we need to use some 
+	pointers in order to reconstruct the solution.
+
+	Complexity: O(N lg N)
+
+- C: Need to understand why the dp works.
+
