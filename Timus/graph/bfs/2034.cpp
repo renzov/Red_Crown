@@ -31,13 +31,10 @@ int N;
 
 vector<int> G[MAXN];
 int ds[MAXN];
-int dt[MAXN];
 int dr[MAXN];
 int ordS[MAXN];
-int ordT[MAXN];
 int ordR[MAXN];
-bool isMin[MAXN];
-int vmin[MAXN];
+int dp[MAXN];
 
 void bfs( int s, int d[], int ord[] ){
 	queue<int> q;
@@ -47,7 +44,7 @@ void bfs( int s, int d[], int ord[] ){
 	q.push( s );
 
 	int u, v;
-	int n;
+	int n = 0;
 
 	while ( !q.empty() ){
 		u = q.front(); q.pop();
@@ -60,7 +57,23 @@ void bfs( int s, int d[], int ord[] ){
 			}
 		}
 	}
-	
+}
+
+int solve( const int &u ){
+	if ( dp[u] != -1 ) return dp[u];
+	int &ret = dp[u];
+
+	int p;
+	int maxprev = -1;
+
+	for ( int i=0; i < (int) G[u].size(); ++i ){
+		p = G[u][i];
+		if ( ds[p] + 1 == ds[u] ){
+			maxprev = max( maxprev, solve( p ) );
+		}
+	}
+	ret = min( maxprev, dr[u] );
+	return ret;
 }
 
 int main(){
@@ -77,15 +90,14 @@ int main(){
 	scanf("%d %d %d", &s, &t, &r);
 	s--, t--, r--;
 	bfs( s, ds, ordS );
-	bfs( t, dt, ordT );
 	bfs( r, dr, ordR );
 
-	int res = 0;
 	/* Determine the vertices that minimize the value
 	   along some path from s to t 
 	*/	
-
-	printf("%d\n", res);
+	fill( dp, dp + N, -1 );
+	dp[s] = dr[s];
+	printf("%d\n", solve(t));
 	return 0;
 }
 
