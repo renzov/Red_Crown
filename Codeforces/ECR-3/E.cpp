@@ -76,6 +76,7 @@ int lca( int u, int v ){
 int main(){
 	scanf("%d %d", &N, &M);
 	int u, v, w;
+	int pu, pv;
 	int l, m;
 	int idx;
 	long long cost = 0;
@@ -93,18 +94,18 @@ int main(){
 		idx = ord[i];
 		u = E[ idx ].first;
 		v = E[ idx ].second;
-		u = find_set( u );
-		v = find_set( v );
-		if ( u != v ){	// Join the sets and mark the edge
-			f[v] = u;
-			inT[i] = true;
-			cost += W[i];
-			T[u].push_back(v); C[u].push_back( W[i] );
-			T[v].push_back(u); C[v].push_back( W[i] );
+		pu = find_set( u );
+		pv = find_set( v );
+		if ( pu != pv ){	// Join the sets and mark the edge
+			f[pv] = pu;
+			inT[idx] = true;
+			cost += W[idx];
+			T[u].push_back(v); C[u].push_back( W[idx] );
+			T[v].push_back(u); C[v].push_back( W[idx] );
 		}
 	}
 	// Preprocess T for LCA queries
-	for ( log = 0; (1<<log) <= N; ++log );
+	for ( log = 0; (1<<log) < N; ++log );
 	log--;
 	L[0] = 0;
 	P[0][0] = -1;
@@ -122,14 +123,14 @@ int main(){
 			}
 	
 	for ( int i=0; i < M; ++i ){
-		if ( inT[i] ) printf("%lld\n", cost);
+		if ( inT[i] ) printf("%I64d\n", cost);
 		else {
 			u = E[i].first;
 			v = E[i].second;
 			w = W[i];
 			l = lca( u , v );
 			m = max( get_max( u, L[u] - L[l] ), get_max( v, L[v] - L[l] ) );
-			printf("%lld\n", cost + w - m);
+			printf("%I64d\n", cost + w - m);
 		}
 	}
 	return 0;
