@@ -71,6 +71,7 @@ int main(){
 			}
 		}
 	}
+	printf("%d\n", col);
 	for( int i=0; i < N; ++i ){
 		if ( i ) putchar(' ');
 		printf("%d", res[i]);
