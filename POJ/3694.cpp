@@ -1,175 +1,128 @@
-#include<vector>
-#include<set>
-#include<algorithm>
 #include<cstdio>
-#include<climits>
+#include<algorithm>
+#include<vector>
 using namespace std;
 const int MAXN = 100005;
-const int MLOG = 19;
+const int NLOG = 18;
 
-typedef pair<int,int> pii;
-
-int N, M, Q;
-int num = 0;
 vector<int> G[MAXN];
-vector<int> T[MAXN];
-int dfsnum[MAXN];
 int low[MAXN];
-bool bridge[MAXN];
-int L[MAXN];
-int rep[MAXN];
-int res;
-int P[MLOG][MAXN];
+int dfsnum[MAXN];
+int d[MAXN];
+int num;
+int N;
+int M;
 int log;
-int cnt[1024];
-set< pii > S[MAXN];
+bool isbridge[MAXN];
+int nxt[NLOG][MAXN];
+int f[MAXN];
+int bridges;
 
-
-void insert( set<pii> &E, const pii &e ){
-	set<pii>::iterator prev = E.lower_bound( pii( e.first , INT_MAX ) );
-	set<pii>::iterator act =  prev--;
-	set<pii>::iterator elim;
-	if ( prev->second <= e.second ) return; // No need to insert
-	if ( prev->first == e.first ){ // also prev.second > e.second
-		--act;  // we begin eliminating from prev 
-	}
-	while ( act != E.end() && act->second >= e.second ){
-		elim = act++;
-		E.erase(elim);
-	}
-}
-
-void dfs( const int &u ){
-	int v;
-	low[u] = dfsnum[u] = num++;	
-	for ( int i=0; i < (int)G[u].size(); ++i ){
-		v = G[u][i];
-		if ( dfsnum[v] == -1 ){
-			T[u].push_back(v);
-			dfs( v );
-			low[u] = min( low[u], low[v] ); 
-			L[v] = L[u] + 1; 
-			P[0][v] = u;
-		}
-		else {
-			low[u] = min( low[u] , dfsnum[u] ); 
-		}
-	}
-	if ( u != 0 && low[u] == dfsnum[u] ){
-		bridge[u] = true;
-		res++;
-	}
-}
-
-void solve( const int &u ){
-	int v;
-	int pu, pv;
-	set<pii>::iterator it;
-	for ( int i=0; i < (int)T[u].size(); ++i ){
-		v = T[u][i];
-		solve( v );
-		pu = rep[u], pv = rep[v];
-		if ( S[pu].size() >= S[pv].size() ){
-			it = S[pv].begin(); it++;
-			for ( ; it != S[pv].end(); ++it )
-				insert( S[pu], *it );
-		}
-		else {
-			it = S[pu].begin(); it++;
-			for ( ; it != S[pu].end(); ++it )
-				insert( S[pv], *it );
-			rep[u] = pv;
-		}
-	}
-	if ( bridge[u] ){
-		pu = rep[u];
-		it = ++S[ pu ].begin();
-		if ( it != S[ pu ].end() ){
-			cnt[it->first]++;
-		}
-	}
-}
-
-int go_up( int u, int D ){
-	for ( int i=log; i >= 0; --i )
-		if ( D >= (1 << i) ){
-			D -= ( 1 << i );
-			u = P[i][u];
-		}
-	return u;
+inline int find_set( const int &x ){	return ( x == f[x] )? x:( f[x] = find_set(f[x]) ); }
+void join_sets( const int &u, const int &v ){
+	if ( u == v ) return;
+	if ( d[u] < d[v] ) f[v] = u;
+	else f[u] = v;
 }
 
 int lca( int u, int v ){
-	if ( L[u] > L[v] ) swap(u, v);
-	v = go_up( v, L[v] - L[u] );
 	if ( u == v ) return u;
-	for ( int i=log; i >= 0 ; --i )
-		if ( P[i][u] != -1 && P[i][u] != P[i][v] )
-			u = P[i][u], v = P[i][v];
-	return P[0][u]; 
+	if ( d[u] > d[v] ) swap(u, v);
+	// d[u] <= d[v]
+	for ( int i=log; i >= 0; --i )
+		if ( (1<<i) <= (d[v] - d[u]) )
+			v = nxt[i][v];
+	if ( u == v ) return u;
+	for ( int i=log; i >= 0; --i )
+		if ( nxt[i][v] != nxt[i][u] )
+			v = nxt[i][v], u = nxt[i][u];
+	return nxt[0][u];
 }
 
-void process( const int &cases ){
+void dfs( const int &u, const int &p ){
+	nxt[0][u] = p;
+	dfsnum[u] = low[u] = num++;
+	d[u] = ( p == -1 )? 0:(d[p] + 1);
+	int v;
+	for ( int i=0; i < (int)G[u].size(); ++i ){
+		v = G[u][i];
+		if ( v == p ) continue;
+		if ( dfsnum[v] == -1 ){
+			dfs( v, u );
+			low[u] = min( low[u], low[v] );
+			if ( !isbridge[v] )
+				join_sets( find_set(u), find_set(v) );
+			else 
+				bridges++;
+		}
+		else if ( dfsnum[v] < dfsnum[u] ){
+			low[u] = min( low[u], dfsnum[v] );
+		}
+	}
+	isbridge[u] = ( p != -1 && low[u] == dfsnum[u] );
+}
+
+void go_up_join(  int u,  int w ){
+	int v;
+	int res = 0;
+	while ( u != w ){
+		v = nxt[0][u];
+		v = find_set(v);
+		f[u] = v;
+		u = v;
+		bridges--;
+	}
+}
+
+void process(){
 	int u, v, w;
-	fill( dfsnum, dfsnum + N, -1 );
 	while ( M-- ){
 		scanf("%d %d", &u, &v);
 		u--, v--;
-		G[u].push_back( v );
-		G[v].push_back( u );
+		G[u].push_back(v), G[v].push_back(u);
 	}
-	L[0] = 0;
-	P[0][0] = -1;
-	res = 0;
-	dfs( 0 );
-	// LCA calculation
-	for ( log=0; (1 << log) < N ; ++log );
-	if ( log > 0 ) log--;
+	num = 0;
+	for ( int i=0; i < N; ++i )
+		dfsnum[i] = -1, f[i] = i;
+	// find depth, bridges and 2-edge-connected components and init LCA
+	bridges = 0;
+	dfs( 0 , -1 );
+	// do LCA precomputation
+	for ( log = 0; (1 << log) <= N; ++log ); log--;
+
 	for ( int i=1; i <= log; ++i )
-		for ( int j=0; j < N; ++j ) 
-			if ( P[i-1][j] != -1 )
-				P[i][j] = P[ i - 1 ][ P[i-1][j] ];
-	// Process the queries
+		for ( int j=0; j < N; ++j )
+			if ( nxt[i-1][j] != -1 )
+				nxt[i][j] = nxt[ i-1 ][ nxt[i-1][j] ];
+			else
+				nxt[i][j] = -1;
+
+	// Ready to process the queries
+	int Q, res;
 	scanf("%d", &Q);
-	fill( cnt, cnt + Q, 0 );
-	for ( int i=0; i < Q; ++i ){
+	while ( Q-- ){
 		scanf("%d %d", &u, &v);
 		u--, v--;
 		w = lca( u, v );
-		if ( w != u ){ // Add event 
-			insert( S[u] , pii( i , L[w] ) );
+		u = find_set( u );
+		v = find_set( v );
+		res = 0;
+		if 	( u != v ){
+			w = find_set( w );	
+			go_up_join( u, w );
+			go_up_join( v, w );
 		}
-		if ( w != v ){ // Add event
-			insert( S[v] , pii( i , L[w] ) );	
-		}
+		printf("%d\n", bridges);
 	}
-	// Set representative
-	for ( int i=0; i < N; ++i ) rep[i] = i;
-	solve( 0 );
-	// Print the result
-	printf("Case: %d\n", cases );
-	for ( int i=0; i < Q; ++i ){
-		res -= cnt[i];
-		printf("%d\n", res);
-	}
+	puts("");
 }
 
-void clean_up(){
-	num = 0;
-	for ( int i=0; i < N; ++i ){
-		S[i].clear();
-		G[i].clear();
-		T[i].clear();
-	}
-}
-
-int main(){	
+int main(){
 	int cases = 0;
-	while ( scanf("%d %d", &N, &M) != EOF ){
-		cases++;
-		for ( int i=0; i < N; ++i ) S[i].insert( pii( -INT_MAX, INT_MAX ) );
-		process(cases);
-		clean_up();
+	while ( scanf("%d %d", &N, &M) && N ){ 
+		printf("Case %d:\n", ++cases );
+		process();
+		for ( int i=0; i < N; ++i ) G[i].clear();
 	}
 	return 0;
 }
