@@ -1,0 +1,24 @@
+<challenge
+    id              = "neerc-2010.main"
+    name            = "ACM ICPC 2010-2011, Northeastern European Regional Contest"
+    scoring-model   = "%icpc"
+    length          = "5h"
+
+    problem-id      = "neerc-2010"
+    xmlai-process   = "http://neerc.ifmo.ru/develop/pcms2/xmlai/default-rules.xml"
+>
+    <problem-ref id = "a" alias = "A" problem-id = "alignment" name = "Alignment of Code"/>
+    <problem-ref id = "b" alias = "B" problem-id = "binary" name = "Binary Operation"/>
+    <problem-ref id = "c" alias = "C" problem-id = "cactus" name = "Cactus Revolution"/>
+    <problem-ref id = "d" alias = "D" problem-id = "dome" name = "Dome of Circus"/>
+    <problem-ref id = "e" alias = "E" problem-id = "evacuation" name = "Evacuation Plan"/>
+    <problem-ref id = "f" alias = "F" problem-id = "factorial" name = "Factorial Simplification"/>
+    <problem-ref id = "g" alias = "G" problem-id = "game" name = "Game of 10"/>
+    <problem-ref id = "h" alias = "H" problem-id = "hands" name = "Hands of Poker"/>
+    <problem-ref id = "i" alias = "I" problem-id = "ideal" name = "Ideal String"/>
+    <problem-ref id = "j" alias = "J" problem-id = "jungle" name = "Jungle Outpost"/>
+    <problem-ref id = "k" alias = "K" problem-id = "kgraph" name = "K-Graph Oddity"/>
+    <problem-ref id = "x" alias = "X" problem-id = "xtra" name = "Xtrapolation"/>
+    <problem-ref id = "y" alias = "Y" problem-id = "yield" name = "Yield"/>
+    <problem-ref id = "z" alias = "Z" problem-id = "zero" name = "Zero-complexity Transposition"/>
+</challenge>
